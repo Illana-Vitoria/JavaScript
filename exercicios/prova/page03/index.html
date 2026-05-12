@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página 03 - Masculino</title>
+    <style> 
+        /* CSS BÁSICO PARA DEMONSTRAÇÃO */
+        .personagem-container {
+            min-height: 150px; /* Para garantir espaço */
+        }
+        .escondido {
+            display: none; /* Classe para esconder as imagens */
+        }
+    </style>
+</head>
+<body>
+    <button id="btnMario">Mario</button>
+    <button id="btnLuigi">Luigi</button>
+    
+    <br><br>
+
+    <div id="personagens-container" class="personagem-container">
+        <img src="img/mario.gif" alt="Mario Correndo" id="imgMario">
+        <img src="img/luigi.gif" alt="Luigi Correndo" id="imgLuigi" class="escondido">
+    </div>
+
+    <br>
+    
+    <p>Pontuação do Mário: <span id="pontuacaoMario">0</span></p>
+    <p>Pontuação do Luigi: <span id="pontuacaoLuigi">0</span></p>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
+<!--  -->
