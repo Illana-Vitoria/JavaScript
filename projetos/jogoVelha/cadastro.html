@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cadastro - Jogo da Velha</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-enter">
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page-container">
+  <header class="site-header">
+    <h1 class="titulo-neon small titulo-pulse">Cadastrar</h1>
+  </header>
+
+  <main class="center-card form-card" style="max-width:420px;">
+    <label class="label">Usuário</label>
+    <input id="novoUsuario" placeholder="Escolha um usuário" />
+
+    <label class="label">Senha</label>
+    <input id="novaSenha" type="password" placeholder="Senha" />
+
+    <label class="label">Confirmar senha</label>
+    <input id="confirmar" type="password" placeholder="Confirmar senha" />
+
+    <div class="form-actions">
+      <button class="btn primary" id="btnCadastrar">Cadastrar</button>
+      <a class="btn ghost btn-zoom" href="login.html">Voltar ao login</a>
+      <a class="btn alt btn-zoom" href="index.html">Início</a>
+    </div>
+
+    <div id="msgcad" class="msg"></div>
+  </main>
+</div>
+
+<script src="js/common_bg.js"></script>
+<script src="js/auth.js"></script>
+<script>
+document.querySelectorAll(".btn-zoom").forEach(btn => {
+    btn.addEventListener("click", function(e){
+        const destino = this.getAttribute("href");
+        e.preventDefault();
+        document.body.classList.add("page-zoom");
+        setTimeout(()=> window.location.href = destino, 350);
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+let tabuleiro = ["","","","","","","","",""];
+let jogadorAtual = "X";
+let fimDeJogo = false;
+let modoDeJogo = null;   // 'cpu' | 'pvp'
+let nivelCPU = "normal"; // 'facil'|'normal'|'dificil'
+
+// timer regressivo
+let totalSegundos = 120;
+let restante = 0;
+let timerInterval = null;
+let jogoAtivo = false;
+
+// sons
+const clickSound = new Audio('sounds/click.wav');
+const buttonSound = new Audio('sounds/button.wav');
+const winSound = new Audio('sounds/win.wav');
+
+// frases da CPU
+const frasesCPU = [
+  "Calculando sua derrota…",
+  "Hmm… movimento interessante, humano.",
+  "Você realmente acha que pode ganhar?",
+  "Analisando possibilidades…",
+  "Processando jogada perfeita.",
+  "O futuro me diz que você vai perder…",
+  "Hahaha… não tão rápido!"
+];
+
+// efeito de zoom nas transições de página
+document.querySelectorAll(".btn-zoom").forEach(btn => {
+    btn.addEventListener("click", function(e){
+        const destino = this.getAttribute("href");
+        e.preventDefault();
+        document.body.classList.add("page-zoom");
+        setTimeout(()=> window.location.href = destino, 350);
+    });
+});
+
+// inicialização ao carregar o DOM
+window.addEventListener('load', () => {
+  // compatibiliza chaves de sessão
+  const logado = localStorage.getItem('usuarioLogado') || localStorage.getItem('logado') || null;
+  if (logado) {
+    const el = document.getElementById('userLogado') || document.getElementById('nomeJogador');
+    if (el) el.innerText = logado;
+  }
+
+  // registrar botões de modo
+  const cpuBtn = document.getElementById('modoCpu');
+  const pvpBtn = document.getElementById('modoPvp');
+  if (cpuBtn) cpuBtn.addEventListener('click', escolherCPU);
+  if (pvpBtn) pvpBtn.addEventListener('click', escolherPVP);
+
+  // registrar controles
+  const btnStart = document.getElementById('btnStart');
+  const btnPause = document.getElementById('btnPause');
+  const btnStop  = document.getElementById('btnStop');
+  const btnReset = document.getElementById('btnReset');
+
+  if (btnStart) btnStart.addEventListener('click', iniciarPartida);
+  if (btnPause) btnPause.addEventListener('click', pausarPartida);
+  if (btnStop) btnStop.addEventListener('click', pararPartida);
+  if (btnReset) btnReset.addEventListener('click', reiniciar);
+
+  // garantir que seleção de nível atualize variáveis quando trocar a <select>
+  const nivelSelect = document.getElementById('nivelCpu');
+  if (nivelSelect) {
+    nivelSelect.addEventListener('change', () => {
+      nivelCPU = nivelSelect.value;
+      ajustarTempoPorNivel();
+    });
+  }
+
+  // Ativar clique nas células do tabuleiro
+  document.querySelectorAll('.cell').forEach((cell, idx) => {
+    if (!cell.getAttribute('onclick')) {
+      cell.addEventListener('click', () => jogar(idx));
+    }
+  });
+
+  // render & UI inicial
+  atualizarUI();
+  renderTabuleiro();
+});
+
+// funções de escolha de modo e ativação do tabuleiro
+function escolherCPU(){
+  modoDeJogo = 'cpu';
+  const dif = document.getElementById('dificuldade-container');
+  if (dif) dif.style.display = 'block';
+  const sel = document.getElementById('nivelCpu');
+  nivelCPU = sel ? sel.value || 'normal' : 'normal';
+  buttonSound.play();
+  ativarTabuleiro();
+}
+
+function escolherPVP(){
+  modoDeJogo = 'pvp';
+  const dif = document.getElementById('dificuldade-container');
+  if (dif) dif.style.display = 'none';
+  buttonSound.play();
+  ativarTabuleiro();
+}
+
+function ativarTabuleiro(){
+  const bw = document.querySelector('.board-wrap');
+  if (bw) { bw.style.opacity='1'; bw.style.pointerEvents='auto'; bw.setAttribute('aria-hidden','false'); }
+  const sel = document.getElementById('seletor-modo');
+  if (sel) sel.style.display = 'none';
+  ajustarTempoPorNivel();
+  resetTimerUI();
+}
+
+
+// funções de timer 
+function ajustarTempoPorNivel(){
+  const nivel = nivelCPU || 'normal';
+  if (nivel === 'facil') totalSegundos = 180;
+  if (nivel === 'normal') totalSegundos = 120;
+  if (nivel === 'dificil') totalSegundos = 90;
+  restante = totalSegundos;
+  atualizarTimerUI();
+}
+
+function formatTime(s){
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+function atualizarTimerUI(){
+  const ttext = document.getElementById('timer-text');
+  const bar = document.getElementById('timer-bar');
+  if (ttext) ttext.textContent = formatTime(restante);
+  if (bar) {
+    const pct = Math.max(0, (restante / totalSegundos) * 100);
+    bar.style.width = pct + '%';
+  }
+}
+
+function resetTimerUI(){
+  restante = totalSegundos;
+  atualizarTimerUI();
+}
+
+
+// Controles do jogo
+function iniciarPartida(){
+  if (!modoDeJogo) { alert('Escolha um modo (CPU ou 2 Jogadores) primeiro.'); return; }
+  if (jogoAtivo) return;
+  jogoAtivo = true;
+  fimDeJogo = false;
+  buttonSound.play();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if (!jogoAtivo) return;
+    restante--;
+    atualizarTimerUI();
+    if (restante <= 0) {
+      clearInterval(timerInterval);
+      jogoAtivo = false;
+      fimDeJogo = true;
+      const resEl = document.getElementById('resultado');
+      if (resEl) resEl.textContent = 'Tempo esgotado!';
+    }
+  },1000);
+}
+
+function pausarPartida(){
+  if (!jogoAtivo) return;
+  jogoAtivo = false;
+  clearInterval(timerInterval);
+  buttonSound.play();
+}
+
+function pararPartida(){
+  jogoAtivo = false;
+  clearInterval(timerInterval);
+  restante = totalSegundos;
+  atualizarTimerUI();
+  buttonSound.play();
+}
+
+// renderização do tabuleiro e atualizações de CPU
+function renderTabuleiro(){
+  for (let i=0;i<9;i++){
+    const el = document.getElementById('c'+i);
+    if(!el) continue;
+    el.textContent = tabuleiro[i] || '';
+    el.classList.remove('x','o','win');
+    if(tabuleiro[i] === 'X') el.classList.add('x');
+    if(tabuleiro[i] === 'O') el.classList.add('o');
+  }
+}
+
+function atualizarUI(){
+  atualizarTimerUI();
+  renderTabuleiro();
+}
+
+function jogar(pos){
+  if (fimDeJogo) return;
+  if (!modoDeJogo) { alert('Escolha um modo para começar.'); return; }
+  if (!jogoAtivo) { alert('Clique em Iniciar para começar a partida.'); return; }
+  if (tabuleiro[pos] !== '') return;
+
+  tabuleiro[pos] = jogadorAtual;
+  try { clickSound.play(); } catch(e){ /* muted */ }
+  renderTabuleiro();
+
+  const win = validarVitoria(jogadorAtual);
+  if (win) { finalizarVitoria(win, jogadorAtual); return; }
+
+  if (!tabuleiro.includes('')) { fimDeJogo = true; const resEl = document.getElementById('resultado'); if(resEl) resEl.textContent = 'Empate!'; return; }
+
+  if (modoDeJogo === 'cpu') {
+    jogadorAtual = 'O';
+    mostrarPensamento();
+    return;
+  }
+
+  if (modoDeJogo === 'pvp') {
+    jogadorAtual = (jogadorAtual === 'X') ? 'O' : 'X';
+  }
+}
+
+function tempoCPU(){
+  if (nivelCPU === 'facil') return 400;
+  if (nivelCPU === 'normal') return 900;
+  if (nivelCPU === 'dificil') return 1500;
+  return 900;
+}
+
+function mostrarPensamento(){
+  const box = document.getElementById('cpu-thinking');
+  const fraseBox = document.getElementById('cpu-frase');
+  if (!box) return;
+  box.classList.remove('easy','normal','hard');
+  if (nivelCPU === 'facil') box.classList.add('easy');
+  if (nivelCPU === 'normal') box.classList.add('normal');
+  if (nivelCPU === 'dificil') box.classList.add('hard');
+  box.classList.add('show');
+
+  if (fraseBox) {
+    fraseBox.textContent = frasesCPU[Math.floor(Math.random() * frasesCPU.length)];
+    fraseBox.classList.add('show');
+    setTimeout(()=> fraseBox.classList.remove('show'), 1500);
+  }
+
+  const delay = tempoCPU();
+  setTimeout(()=>{
+    box.classList.remove('show');
+    jogadaCPU();
+    renderTabuleiro();
+    const w = validarVitoria('O');
+    if (w) { finalizarVitoria(w,'O'); return; }
+    if (!tabuleiro.includes('')) { fimDeJogo = true; const resEl = document.getElementById('resultado'); if(resEl) resEl.textContent = 'Empate!'; return; }
+    jogadorAtual = 'X';
+  }, delay);
+}
+
+function jogadaCPU(){
+  if (nivelCPU === 'facil') {
+    let livres = tabuleiro.map((v,i)=> v===''?i:null).filter(v=>v!==null);
+    if (livres.length>0) tabuleiro[livres[Math.floor(Math.random()*livres.length)]]='O';
+    try { clickSound.play(); } catch(e){}
+    return;
+  }
+
+  if (nivelCPU === 'normal') {
+    for (let i=0;i<9;i++){
+      if (tabuleiro[i]===''){
+        tabuleiro[i]='O';
+        if (validarVitoria('O')) { try{ clickSound.play(); }catch(e){}; return; }
+        tabuleiro[i]='';
+      }
+    }
+    for (let i=0;i<9;i++){
+      if (tabuleiro[i]===''){
+        tabuleiro[i]='X';
+        if (validarVitoria('X')){ tabuleiro[i]='O'; try{ clickSound.play(); }catch(e){}; return; }
+        tabuleiro[i]='';
+      }
+    }
+    let livres = tabuleiro.map((v,i)=> v===''?i:null).filter(v=>v!==null);
+    if (livres.length>0){ tabuleiro[livres[Math.floor(Math.random()*livres.length)]]='O'; try{ clickSound.play(); }catch(e){}; return; }
+    return;
+  }
+
+  if (nivelCPU === 'dificil') {
+    let best = minimax(tabuleiro.slice(), 'O');
+    if (best && typeof best.index !== 'undefined') {
+      tabuleiro[best.index] = 'O';
+      try{ clickSound.play(); }catch(e){}
+    } else {
+      let livres = tabuleiro.map((v,i)=> v===''?i:null).filter(v=>v!==null);
+      if (livres.length>0) tabuleiro[livres[0]]='O';
+      try{ clickSound.play(); }catch(e){}
+    }
+  }
+}
+
+function obterVazios(board){ return board.map((v,i)=> v===''?i:null).filter(v=>v!==null); }
+
+function minimax(newBoard, player){
+  const hu = 'X', ai='O';
+  const vazios = obterVazios(newBoard);
+  if (validarVitoria('O', newBoard)) return {score:10};
+  if (validarVitoria('X', newBoard)) return {score:-10};
+  if (vazios.length === 0) return {score:0};
+  const moves = [];
+  for (let i=0;i<vazios.length;i++){
+    let idx = vazios[i];
+    let move = { index: idx };
+    newBoard[idx]=player;
+    if (player === ai) move.score = minimax(newBoard, hu).score;
+    else move.score = minimax(newBoard, ai).score;
+    newBoard[idx]='';
+    moves.push(move);
+  }
+  let bestMove;
+  if (player === ai){
+    let bestScore = -Infinity;
+    for (let i=0;i<moves.length;i++){
+      if (moves[i].score > bestScore){ bestScore = moves[i].score; bestMove = i; }
+    }
+  } else {
+    let bestScore = Infinity;
+    for (let i=0;i<moves.length;i++){
+      if (moves[i].score < bestScore){ bestScore = moves[i].score; bestMove = i; }
+    }
+  }
+  return moves[bestMove];
+}
+
+function validarVitoria(player, board = tabuleiro){
+  const combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for (let c of combos){
+    if (board[c[0]] === player && board[c[1]] === player && board[c[2]] === player) return c;
+  }
+  return null;
+}
+
+function finalizarVitoria(comb, player){
+  fimDeJogo = true;
+  jogadorAtual = player;
+  comb.forEach(i=>{ const el=document.getElementById('c'+i); if(el) el.classList.add('win'); });
+  const resEl = document.getElementById('resultado'); if(resEl) resEl.textContent = `Jogador ${player} venceu!`;
+  try{ winSound.play(); }catch(e){}
+  clearInterval(timerInterval);
+  jogoAtivo = false;
+  // salvar no ranking
+  let nomeJogador = localStorage.getItem("usuarioLogado") || localStorage.getItem("logado") || "Convidado";
+  if (typeof salvarNoRanking === 'function') {
+    salvarNoRanking({
+      nome: nomeJogador,
+      vitorias: 1,
+      tempo: restante,
+      dificuldade: (modoDeJogo === "cpu" ? nivelCPU : "pvp")
+    });
+  }
+}
+
+function reiniciar(){
+  tabuleiro = ["","","","","","","","",""];
+  jogadorAtual = "X";
+  fimDeJogo = false;
+  const resEl = document.getElementById('resultado'); if(resEl) resEl.textContent = '';
+  const fraseEl = document.getElementById('cpu-frase'); if(fraseEl) fraseEl.textContent = '';
+  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('win','x','o'));
+  renderTabuleiro();
+  ajustarTempoPorNivel();
+  resetTimerUI();
+  clearInterval(timerInterval);
+  jogoAtivo = false;
+}

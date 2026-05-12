@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tabuleiro do Jogo</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-enter">
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page-container">
+  <header class="site-header">
+    <h1 class="titulo-neon titulo-pulse">Jogo da Velha</h1>
+    <div class="hud">
+      <div class="hud-left">
+        <span class="small-muted">Logado como</span>
+        <strong id="userLogado" class="hud-user">convidado</strong>
+      </div>
+
+      <div class="hud-center">
+        <div class="mode-select">
+          <button class="btn small" id="modoCpu">Contra a CPU</button>
+          <button class="btn small ghost" id="modoPvp">2 Jogadores</button>
+        </div>
+
+        <div id="dificuldade-container" class="dificuldade" style="display:none">
+          <select id="nivelCpu" class="select-nivel">
+            <option value="facil">Fácil</option>
+            <option value="normal" selected>Normal</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <div class="timer-wrap">
+          <div id="timer-text" class="timer-text">00:00</div>
+          <div class="progress-bg">
+            <div id="timer-bar" class="timer-bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="center-card game-card">
+    <div id="seletor-modo" class="modo-container small" style="margin-bottom:18px;">
+      <small class="small-muted">Escolha o modo antes de iniciar</small>
+    </div>
+
+    <div class="board-wrap" aria-hidden="true">
+      <div class="board">
+        <div class="cell" id="c0" onclick="jogar(0)"></div>
+        <div class="cell" id="c1" onclick="jogar(1)"></div>
+        <div class="cell" id="c2" onclick="jogar(2)"></div>
+
+        <div class="cell" id="c3" onclick="jogar(3)"></div>
+        <div class="cell" id="c4" onclick="jogar(4)"></div>
+        <div class="cell" id="c5" onclick="jogar(5)"></div>
+
+        <div class="cell" id="c6" onclick="jogar(6)"></div>
+        <div class="cell" id="c7" onclick="jogar(7)"></div>
+        <div class="cell" id="c8" onclick="jogar(8)"></div>
+      </div>
+    </div>
+
+    <div id="cpu-thinking" class="cpu-thinking">
+      <div class="loader"></div>
+      <span>CPU pensando…</span>
+    </div>
+
+    <div id="cpu-frase" class="cpu-frase"></div>
+
+    <div id="resultado" class="resultado"></div>
+
+    <div class="controls">
+      <button class="btn primary" id="btnStart">Iniciar</button>
+      <button class="btn ghost" id="btnPause">Pausar</button>
+      <button class="btn alt" id="btnStop">Parar</button>
+      <button class="btn" id="btnReset">Reiniciar</button>
+      <a class="btn ghost btn-zoom" href="index.html">Voltar</a>
+    </div>
+  </main>
+</div>
+
+<script src="js/common_bg.js"></script>
+<script src="js/jogo.js"></script>
+
+</body>
+</html>

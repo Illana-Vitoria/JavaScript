@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page-enter">
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="page-container">
+  <header class="site-header">
+    <h1 class="titulo-neon small titulo-pulse">Entrar</h1>
+  </header>
+
+  <main class="center-card form-card" style="max-width:420px;">
+    <label class="label">Usuário</label>
+    <input id="username" placeholder="Seu usuário" />
+
+    <label class="label">Senha</label>
+    <input id="senha" type="password" placeholder="Senha" />
+
+    <div class="form-actions">
+      <button class="btn primary" id="btnLogin">Entrar</button>
+      <a class="btn ghost btn-zoom" href="cadastro.html">Criar conta</a>
+      <a class="btn alt btn-zoom" href="index.html">Voltar</a>
+    </div>
+
+    <div id="msg" class="msg"></div>
+  </main>
+</div>
+
+<script src="js/common_bg.js"></script>
+<script src="js/auth.js"></script>
+
+</body>
+</html>

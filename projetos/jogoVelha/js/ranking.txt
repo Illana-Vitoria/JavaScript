@@ -1,0 +1,101 @@
+
+window.addEventListener("load", () => {
+    // Inicializar seleção de nível e mostrar ranking
+    const sel = document.getElementById("rankNivel");
+    if (sel) sel.value = sel.value || "normal";
+    mostrarRanking();
+});
+
+/* salvarNoRanking - chamada pelo jogo quando alguém vence */
+function salvarNoRanking({ nome, vitorias, tempo, dificuldade }) {
+    const chave = "ranking_" + dificuldade;
+    let lista = JSON.parse(localStorage.getItem(chave) || "[]");
+
+    let peso = 1;
+    if (dificuldade === "normal") peso = 3;
+    if (dificuldade === "dificil") peso = 5;
+
+    const pontuacao = vitorias * peso * 10 + (typeof tempo === 'number' ? tempo : 0);
+
+    lista.push({
+        nome,
+        vitorias,
+        tempo,
+        dificuldade,
+        pontuacao,
+        data: new Date().toLocaleString("pt-BR")
+    });
+
+    localStorage.setItem(chave, JSON.stringify(lista));
+}
+
+/* Exibir ranking */
+function mostrarRanking() {
+    const nivelEl = document.getElementById("rankNivel");
+    const nivel = (nivelEl && nivelEl.value) ? nivelEl.value : "normal";
+
+    const chave = "ranking_" + nivel;
+    let lista = JSON.parse(localStorage.getItem(chave) || "[]");
+
+    // ordenar
+    lista.sort((a, b) =>
+        b.pontuacao - a.pontuacao ||
+        b.vitorias - a.vitorias ||
+        b.tempo - a.tempo
+    );
+
+    const tabela = document.getElementById("tabelaRanking");
+
+    if (!tabela) return;
+
+    if (!lista.length) {
+        tabela.innerHTML = `<tr><td style="padding:12px;color:#ccc;text-align:center;">Nenhum registro ainda.</td></tr>`;
+        return;
+    }
+
+    tabela.innerHTML = `
+    <tr class="rank-header">
+        <th>Posição</th>
+        <th>Jogador</th>
+        <th>Vitórias</th>
+        <th>Tempo</th>
+        <th>Pontos</th>
+        <th>Data</th>
+    </tr>
+    `;
+
+    lista.forEach((item, i) => {
+
+        let medalha = "";
+        if (i === 0) medalha = `<span class="medal gold">🥇</span>`;
+        if (i === 1) medalha = `<span class="medal silver">🥈</span>`;
+        if (i === 2) medalha = `<span class="medal bronze">🥉</span>`;
+
+        tabela.innerHTML += `
+        <tr class="rank-row">
+            <td>${medalha || (i + 1 + "º")}</td>
+            <td>${item.nome}</td>
+            <td>${item.vitorias}</td>
+            <td>${item.tempo}s</td>
+            <td>${item.pontuacao}</td>
+            <td>${item.data}</td>
+        </tr>
+        `;
+    });
+}
+
+/* função para limpar ranking */
+function limparRanking(nivel) {
+    if (!confirm('Deseja realmente limpar o ranking ' + nivel + '?')) return;
+    localStorage.removeItem('ranking_' + nivel);
+    mostrarRanking();
+}
+
+document.querySelectorAll(".btn-zoom").forEach(btn => {
+    btn.addEventListener("click", function(e){
+        const destino = this.getAttribute("href");
+        e.preventDefault();
+        document.body.classList.add("page-zoom");
+        setTimeout(()=> window.location.href = destino, 350);
+    });
+});
