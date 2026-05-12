@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;700&display=swap');
+
+:root {
+    --bg-creme: #fdfaf1;     
+    --navbar-bg: #ffffff;      
+    --accent-yellow: #f3ce13;  
+    --accent-gold: #d4a017;    
+    --text-dark: #2c2c2c;      
+    --text-muted: #757575;    
+}
+
+body {
+    background-color: var(--bg-creme);
+    color: var(--text-dark);
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+}
+
+/* --- NAVBAR E LOGO --- */
+.navbar {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 3px solid var(--accent-yellow);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 15px 0;
+}
+
+.logo-lhama {
+    height: 110px !important; 
+    width: auto;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.logo-lhama:hover {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+.navbar-text {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--text-muted);
+    margin-top: 25px;
+}
+
+/* --- TÍTULO PRINCIPAL --- */
+.titulo-pagina {
+    font-family: 'Bebas Neue', cursive;
+    color: var(--text-dark);
+    font-size: 4rem;
+    text-align: center;
+    margin-top: 40px;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 0px var(--accent-yellow);
+}
+
+/* --- CARDS DOS FILMES --- */
+#lista-filmes .card {
+    background-color: #ffffff !important;
+    border: none !important;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#lista-filmes .card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 15px 30px rgba(212, 160, 23, 0.15);
+}
+
+.card-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.6rem;
+    color: var(--accent-gold);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.card-title:hover {
+    color: var(--text-dark);
+    text-decoration: underline;
+}
+
+/* --- NOTA DA LHAMA --- */
+.nota-lhama-container {
+    background: #fff9e6;
+    border: 2px solid var(--accent-yellow);
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-lhama {
+    width: 35px !important;
+    height: 35px !important;
+    object-fit: contain;
+}
+
+/* --- MODAL --- */
+.modal-content {
+    background-color: var(--bg-creme) !important;
+    border-radius: 25px !important;
+    padding: 10px;
+}
+
+.btn-close {
+    position: relative;
+    z-index: 2000 !important; 
+    background-color: var(--accent-yellow); 
+    opacity: 1;
+    border-radius: 50%;
+    padding: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.btn-close:hover {
+    transform: rotate(90deg) scale(1.1);
+    background-color: var(--accent-gold);
+}
+
+.modal-header {
+    z-index: 2001; 
+}
+
+/* Animação do modal */
+.modal.fade .modal-dialog {
+    transform: scale(0.8);
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* --- FOOTER --- */
+footer {
+    border-top: 1px solid #ddd;
+    margin-top: 50px;
+    padding: 30px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .titulo-pagina { font-size: 2.5rem; }
+    .logo-lhama { height: 80px !important; }
+}
