@@ -1,1 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como se Lhama?</title>
+
+    <!-- importa o CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-dark shadow">
+
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="imgs/logo_lhama3.jpg" alt="Lhama Crítica" class="logo-lhama">
+            </a>
+
+            <span class="navbar-text d-none d-md-block">
+                Buscando nomes, julgando roteiros.
+            </span>
+        </div>
+    </nav>
+
+    <header class="hero-section text-center mt-5">
+
+        <div class="container">
+            <h1 class="display-4 fw-bold">Filmes mais Comentados</h1>
+            <p class="lead">Os 10 títulos que estão lhamando a atenção no momento.</p>
+        </div>
+
+    </header>
+
+    <main class="container my-5">
+
+        <div id="lista-filmes" class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
+            <!-- grid responsivo para exibir os filmes em diferentes colunas de acordo com o tamanho da tela -->
+
+            <div class="col text-center w-100 py-5">
+                <output class="h4 d-block">A Lhama está analisando os dados...</output>
+            </div>
+
+        </div>
+        <!-- Modal para exibir detalhes do filme -->
+        <div class="modal fade" id="movieModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header border-0 pb-0">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body pt-0" id="modal-conteudo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 text-center border-top border-secondary mt-5">
+        <p>&copy; 2026 - Projeto AJAX By Illana Rabelo</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- importa o JavaScript do Bootstrap -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
